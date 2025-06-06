@@ -1,0 +1,98 @@
+// server.js and App.js combined in one file for simplicity
+const express = require('express');
+const axios = require('axios');
+const app = express();
+const port = 3001;
+
+app.use(express.json());
+app.use(express.static('public'));
+
+const API_KEY = 'YOUR_API_KEY'; // Get your API key from a currency API provider
+const API_URL = `https:                                       
+
+app.get('/api/rates', async (req, res) => {
+  try {
+    const response = await axios.get(//api.exchangerate-api.com/v4/latest/;
+
+app.get('/api/rates', async (req, res) => {
+  try {
+    const response = await axios.get(${API_URL}USD?access_key=${API_KEY});
+    res.json(response.data);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error fetching currency rates' });
+  }
+});
+
+app.post('/api/convert', async (req, res) => {
+  try {
+    const { from, to, amount } = req.body;
+    const response = await axios.get(${API_URL}${from}?access_key=${API_KEY});
+    const rate = response.data.rates[to];
+    const result = amount * rate;
+    res.json({ result });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error converting currency' });
+  }
+});
+
+app.listen(port, () => {
+  console.log(Server listening on port ${port});
+});
+
+// Client-side code
+const React = require('react');
+const ReactDOM = require('react-dom');
+
+function App() {
+  const [fromCurrency, setFromCurrency] = React.useState('USD');
+  const [toCurrency, setToCurrency] = React.useState('EUR');
+  const [amount, setAmount] = React.useState(1);
+  const [result, setResult] = React.useState(null);
+  const [rates, setRates] = React.useState({});
+
+  React.useEffect(() => {
+    axios.get('/api/rates')
+      .then(response => {
+        setRates(response.data.rates);
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  }, []);
+
+  const handleConvert = async () => {
+    try {
+      const response = await axios.post('/api/convert', {
+        from: fromCurrency,
+        to: toCurrency,
+        amount,
+      });
+      setResult(response.data.result);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  return (
+    <div>
+      <h1>Currency Converter</h1>
+      <select value={fromCurrency} onChange={(e) => setFromCurrency(e.target.value)}>
+        {Object.keys(rates).map((currency) => (
+          <option key={currency} value={currency}>{currency}</option>
+        ))}
+      </select>
+      <select value={toCurrency} onChange={(e) => setToCurrency(e.target.value)}>
+        {Object.keys(rates).map((currency) => (
+          <option key={currency} value={currency}>{currency}</option>
+        ))}
+      </select>
+      <input type="number" value={amount} onChange={(e) => setAmount(e.target.value)} />
+      <button onClick={handleConvert}>Convert</button>
+      {result && <p>Result: {result}</p>}
+    </div>
+  );
+}
+
+ReactDOM.render(<App />, document.getElementById('root'));
